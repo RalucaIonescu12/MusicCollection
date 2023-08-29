@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using MusicCollection.Data;
+using MusicCollection.Helpers.Extensions;
+using MusicCollection.Repositories.AccountRepository;
+using MusicCollection.Repositories.SongRepository;
+using MusicCollection.Services.AccountService;
+using MusicCollection.Services.SongService;
 
 var allowOrigins = "_allowOrigins";
 
@@ -14,6 +19,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddRepositories();
+builder.Services.AddServices();
 builder.Services.AddDbContext<MusicCollectionContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

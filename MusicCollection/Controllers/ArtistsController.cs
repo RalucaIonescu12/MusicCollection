@@ -36,7 +36,7 @@ namespace MusicCollection.Controllers
         }
         
         [HttpGet("{id}")]
-        public async Task<ActionResult<Artist>> GetArtist(Guid id)
+        public async Task<ActionResult<ArtistDto>> GetArtist(Guid id)
         {
           if (_context.Artists == null)
           {
@@ -48,8 +48,8 @@ namespace MusicCollection.Controllers
             {
                 return NotFound();
             }
-
-            return artist;
+            var artistDto = _mapper.Map<ArtistDto>(artist);
+            return Ok(artistDto);
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> PutArtist(Guid id, Artist artist)

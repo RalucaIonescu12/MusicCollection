@@ -11,8 +11,6 @@ namespace MusicCollection.Models.Dtos
         public string Duration { get; set; } = string.Empty;
         [Required]
         public DateTime ReleaseDate { get; set; } = DateTime.Now;
-        [Required]
-        public Guid ArtistId { get; set; }
 
     }
 }

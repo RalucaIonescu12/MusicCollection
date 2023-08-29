@@ -9,6 +9,7 @@ namespace MusicCollection.Profiles
         {
             CreateMap<Artist, ArtistCreateDto>();
             CreateMap<Artist, ArtistDto>();
+            CreateMap<ArtistDto, Artist>();
             CreateMap< ArtistCreateDto, Artist>();
         }
     }

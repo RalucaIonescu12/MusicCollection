@@ -26,18 +26,18 @@ namespace MusicCollection.Controllers
 
         // GET: api/Playlists
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylists()
+        public async Task<ActionResult<IEnumerable<PlaylistDto>>> GetPlaylists()
         {
           if (_context.Playlists == null)
           {
               return NotFound();
           }
-            return await _context.Playlists.ToListAsync();
+            //return await _context.Playlists.ToListAsync();
+            return Ok(_mapper.Map<ICollection<PlaylistDto>>(await _context.Playlists.ToListAsync()));
         }
 
-        // GET: api/Playlists/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Playlist>> GetPlaylist(Guid id)
+        public async Task<ActionResult<PlaylistDto>> GetPlaylist(Guid id)
         {
           if (_context.Playlists == null)
           {
@@ -49,8 +49,8 @@ namespace MusicCollection.Controllers
             {
                 return NotFound();
             }
-
-            return playlist;
+            var playlistDto= _mapper.Map<PlaylistDto>(playlist);
+            return Ok(playlistDto);
         }
         
         [HttpPut("{id}")]

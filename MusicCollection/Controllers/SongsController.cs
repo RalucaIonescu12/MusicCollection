@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using MusicCollection.Data;
 using MusicCollection.Models;
 using MusicCollection.Models.Dtos;
+using MusicCollection.Services.SongService;
 
 namespace MusicCollection.Controllers
 {
@@ -18,24 +21,27 @@ namespace MusicCollection.Controllers
     {
         private readonly MusicCollectionContext _context;
         private readonly IMapper _mapper;
-        public SongsController(MusicCollectionContext context, IMapper mapper)
+        private readonly ISongService _songService;
+        public SongsController(MusicCollectionContext context, IMapper mapper, ISongService songService)
         {
             _context = context;
             _mapper = mapper;
+            _songService = songService;
         }
-        
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Song>>> GetSongs()
+        public async Task<ActionResult<List<SongDto>>> GetSongs()
         {
           if (_context.Songs == null)
           {
               return NotFound();
           }
-            return await _context.Songs.ToListAsync();
+         
+            return Ok(await _songService.GetAll());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Song>> GetSong(Guid id)
+        public async Task<ActionResult<SongDto>> GetSong(Guid id)
         {
           if (_context.Songs == null)
           {
@@ -47,8 +53,8 @@ namespace MusicCollection.Controllers
             {
                 return NotFound();
             }
-
-            return song;
+            var songDto = _mapper.Map<SongDto>(song);
+            return Ok(songDto);
         }
         
         [HttpPut("{id}")]
@@ -80,14 +86,16 @@ namespace MusicCollection.Controllers
             return NoContent();
         }
         
-        [HttpPost]
-        public async Task<ActionResult<Song>> PostSong(SongCreateDto songDto)
+        [HttpPost("{artistId}")]
+        public async Task<ActionResult<Song>> PostSong(Guid artistId,SongCreateDto songDto)
         {
           if (_context.Songs == null)
           {
               return Problem("Entity set 'MusicCollectionContext.Songs'  is null.");
           }
             var songEntity = _mapper.Map<Song>(songDto);
+            songEntity.ArtistId = artistId;
+
             _context.Songs.Add(songEntity);
             await _context.SaveChangesAsync();
 

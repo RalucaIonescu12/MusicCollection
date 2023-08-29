@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicCollection.Data;
 using MusicCollection.Models;
 using MusicCollection.Models.Dtos;
+using MusicCollection.Services.AccountService;
 
 namespace MusicCollection.Controllers
 {
@@ -13,25 +15,26 @@ namespace MusicCollection.Controllers
     {
         private readonly MusicCollectionContext _context;
         private readonly IMapper _mapper;
-        public AccountsController(MusicCollectionContext context, IMapper mapper)
+        private readonly IAccountService _accountService;
+        public AccountsController(MusicCollectionContext context, IMapper mapper, IAccountService accountService)
         {
             _context = context;
             _mapper = mapper;
+            _accountService = accountService;
         }
         
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAccounts()
+        public async Task<ActionResult<List<AccountDto>>> GetAccounts()
         {
           if (_context.Accounts == null)
           {
               return NotFound();
           }
-            //return await _context.Accounts.ToListAsync();
-            return Ok(_mapper.Map<ICollection<AccountDto>>(await _context.Accounts.ToListAsync()));
+            return Ok(await _accountService.GetAll());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> GetAccount(Guid id)
+        public async Task<ActionResult<AccountDto>> GetAccount(Guid id)
         {
           if (_context.Accounts == null)
           {
@@ -43,8 +46,8 @@ namespace MusicCollection.Controllers
             {
                 return NotFound();
             }
-
-            return account;
+            var accountDto = _mapper.Map<AccountDto>(account);
+            return Ok(accountDto);
         }
         
         [HttpPut("{id}")]
