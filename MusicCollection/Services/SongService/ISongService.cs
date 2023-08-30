@@ -7,8 +7,9 @@ namespace MusicCollection.Services.SongService
     public interface ISongService
     {
         public Task<List<SongDto>> GetAll();
-        public Task AddSong(SongDto newSong);
+        public Task<Song> AddSong(SongCreateDto newSong);
      
         public Task DeleteSong(Guid songId);
+        public Task<SongDto> GetSongById(Guid songId);
     }
 }

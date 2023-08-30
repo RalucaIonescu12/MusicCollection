@@ -1,6 +1,11 @@
-﻿using MusicCollection.Repositories.AccountRepository;
+﻿using MusicCollection.Helpers.Jwt;
+using MusicCollection.Repositories.AccountRepository;
+using MusicCollection.Repositories.ArtistRepository;
+using MusicCollection.Repositories.PlaylistRepository;
 using MusicCollection.Repositories.SongRepository;
 using MusicCollection.Services.AccountService;
+using MusicCollection.Services.ArtistService;
+using MusicCollection.Services.PlaylistService;
 using MusicCollection.Services.SongService;
 
 namespace MusicCollection.Helpers.Extensions
@@ -12,7 +17,8 @@ namespace MusicCollection.Helpers.Extensions
 
             services.AddTransient<ISongRepository, SongRepository>();
             services.AddTransient<IAccountRepository, AccountRepository>();
-           
+            services.AddTransient<IPlaylistRepository, PlaylistRepository>();
+            services.AddTransient<IArtistRepository, ArtistRepository>();
             return services;
         }
 
@@ -20,7 +26,8 @@ namespace MusicCollection.Helpers.Extensions
         {
             services.AddTransient<ISongService, SongService>();
             services.AddTransient<IAccountService, AccountService>();
-
+            services.AddTransient<IPlaylistService, PlaylistService>();
+            services.AddTransient<IArtistService, ArtistService>();
             return services;
         }
 
@@ -31,11 +38,11 @@ namespace MusicCollection.Helpers.Extensions
         //    return services;
         //}
 
-        //public static IServiceCollection AddUtils(this IServiceCollection services)
-        //{
-        //    services.AddTransient<IJwtUtils, JwtUtils>();
+        public static IServiceCollection AddUtils(this IServiceCollection services)
+        {
+            services.AddTransient<IJwtUtils, JwtUtils>();
 
-        //    return services;
-        //}
+            return services;
+        }
     }
 }

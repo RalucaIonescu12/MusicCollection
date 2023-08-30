@@ -1,52 +1,47 @@
 ﻿using AutoMapper;
+using MusicCollection.Helpers.Jwt;
 using MusicCollection.Models;
 using MusicCollection.Models.Dtos;
+using MusicCollection.Models.DTOs;
+using MusicCollection.Models.Enums;
 using MusicCollection.Repositories.AccountRepository;
-
+using NuGet.DependencyResolver;
+using BCryptNet = BCrypt.Net.BCrypt;
 namespace MusicCollection.Services.AccountService
 {
     public class AccountService : IAccountService
     {
         public IAccountRepository _accountRepository;
         public IMapper _mapper;
-        public AccountService(IAccountRepository accountRepository, IMapper mapper)
+        public IJwtUtils _jwtUtils;
+        public AccountService(IAccountRepository accountRepository, IMapper mapper, IJwtUtils jwtUtils)
         {
             _accountRepository = accountRepository;
             _mapper = mapper;
+            _jwtUtils = jwtUtils;
         }
 
-        public async Task AddAccount(AccountDto newAccount)
+        public AccountAuthResponseDto Authentificate(AccountAuthRequestDto model)
         {
-            // var newDbAccount = new Account();
+            var account = _accountRepository.FindByEmail(model.Email);
+            if (account == null || !BCryptNet.Verify(model.Password, account.PasswordHash))
+            {
+                return null;
+            }
+
+            // jwt generation
+            var jwtToken = _jwtUtils.GenerateJwtToken(account);
+            return new AccountAuthResponseDto(account, jwtToken);
+        }
+        public async Task<Account> AddAccount(AccountCreateDto newAccount)
+        {
             var newAccountEntity = _mapper.Map<Account>(newAccount);
             await _accountRepository.CreateAsync(newAccountEntity);
             await _accountRepository.SaveAsync();
+            return newAccountEntity;
         }
 
-        //public async Task<List<AccountWithStudentsDto>> AddStudentsToAccount(Guid accountId, List<Guid> studentsIds)
-        //{
-        //    var accountToUpdate = await _accountRepository.FindByIdAsync(accountId);
-        //    List<Student> studentsFromDbList = await _studentRepository.FindRange(studentsIds);
-            
-        //    List<StudentInAccount> studentInAccountList = new();
-
-        //    foreach (var student in studentsFromDbList)
-        //    {
-        //        var newStudentInAccount = new StudentInAccount
-        //        {
-        //            Student = student,
-        //            Account = accountToUpdate
-        //        };
-
-        //        studentInAccountList.Add(newStudentInAccount);
-        //    }
-        //    await _studentInAccountRepository.CreateRangeAsync(studentInAccountList);
-        //    await _studentInAccountRepository.SaveAsync();
-
-        //    var accountsWithStudents = await _accountRepository.GetAccountsWithStudents();
-        //    return _mapper.Map<List<AccountWithStudentsDto>> (accountsWithStudents);
-        //}
-
+      
         public async Task DeleteAccount(Guid accountId)
         {
             var accountToDelete = await _accountRepository.FindByIdAsync(accountId);
@@ -58,6 +53,34 @@ namespace MusicCollection.Services.AccountService
         {
             var accounts = await _accountRepository.GetAll();
             return _mapper.Map< List<AccountDto>>(accounts);
+        }
+        public async Task<AccountDto> GetAccountById(Guid accountId)
+        {
+            var account = await _accountRepository.GetAccountById(accountId);
+            return _mapper.Map<AccountDto>(account);
+        }
+        public async Task<Account> GetAccountEntityById(Guid accountId)
+        {
+            var account = await _accountRepository.GetAccountById(accountId);
+            return account;
+        }
+        public async Task Create(AccountAuthRequestDto account)
+        {
+            var newDBAccount = _mapper.Map<Account>(account);
+            newDBAccount.PasswordHash = BCryptNet.HashPassword(account.Password);
+            newDBAccount.Role = Role.User;
+
+            await _accountRepository.CreateAsync(newDBAccount);
+            await _accountRepository.SaveAsync();
+        }
+        public async Task CreateAdmin(AccountAuthRequestDto account)
+        {
+            var newDBAccount = _mapper.Map<Account>(account);
+            newDBAccount.PasswordHash = BCryptNet.HashPassword(account.Password);
+            newDBAccount.Role = Role.Admin;
+
+            await _accountRepository.CreateAsync(newDBAccount);
+            await _accountRepository.SaveAsync();
         }
     }
 }

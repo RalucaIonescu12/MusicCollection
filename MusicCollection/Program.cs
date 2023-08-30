@@ -6,6 +6,7 @@ using MusicCollection.Repositories.AccountRepository;
 using MusicCollection.Repositories.SongRepository;
 using MusicCollection.Services.AccountService;
 using MusicCollection.Services.SongService;
+using MusicLibrary.Helpers;
 
 var allowOrigins = "_allowOrigins";
 
@@ -21,6 +22,9 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddRepositories();
 builder.Services.AddServices();
+builder.Services.AddUtils();
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
 builder.Services.AddDbContext<MusicCollectionContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

@@ -16,11 +16,12 @@ namespace MusicCollection.Services.SongService
             _mapper = mapper;
         }
 
-        public async Task AddSong(SongDto newSong)
+        public async Task<Song> AddSong(SongCreateDto newSong)
         {
             var newSongEntity = _mapper.Map<Song>(newSong);
             await _songRepository.CreateAsync(newSongEntity);
             await _songRepository.SaveAsync();
+            return newSongEntity;
         }
 
         //public async Task<List<AccountWithStudentsDto>> AddStudentsToAccount(Guid accountId, List<Guid> studentsIds)
@@ -58,6 +59,11 @@ namespace MusicCollection.Services.SongService
         {
             var songs = await _songRepository.GetAll();
             return _mapper.Map< List<SongDto>>(songs);
+        }
+        public async Task<SongDto> GetSongById(Guid songId)
+        {
+            var song = await _songRepository.GetSongById(songId);
+            return _mapper.Map<SongDto>(song);
         }
     }
 }

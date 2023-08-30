@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicCollection.Data;
+using MusicCollection.Helpers.Attributes;
 using MusicCollection.Models;
 using MusicCollection.Models.Dtos;
+using MusicCollection.Models.DTOs;
+using MusicCollection.Models.Enums;
 using MusicCollection.Services.AccountService;
 
 namespace MusicCollection.Controllers
@@ -22,7 +25,30 @@ namespace MusicCollection.Controllers
             _mapper = mapper;
             _accountService = accountService;
         }
-        
+        [HttpPost("create-user")]
+        public async Task<IActionResult> CreateAccount(AccountAuthRequestDto account)
+        {
+            await _accountService.Create(account);
+            return Ok();
+        }
+        [HttpPost("create-admin")]
+        public async Task<IActionResult> CreateAdmin(AccountAuthRequestDto account)
+        {
+            await _accountService.CreateAdmin(account);
+            return Ok();
+        }
+
+        [HttpPost("login-account")]
+        public IActionResult Login(AccountAuthRequestDto account)
+        {
+            var response = _accountService.Authentificate(account);
+            if (response == null)
+            {
+                return BadRequest("Username or password is invalid!");
+            }
+            return Ok(response);
+        }
+        //[Authorization(Role.Admin)]
         [HttpGet]
         public async Task<ActionResult<List<AccountDto>>> GetAccounts()
         {
@@ -36,17 +62,17 @@ namespace MusicCollection.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<AccountDto>> GetAccount(Guid id)
         {
-          if (_context.Accounts == null)
-          {
-              return NotFound();
-          }
-            var account = await _context.Accounts.FindAsync(id);
-
-            if (account == null)
+            if (_context.Accounts == null)
             {
                 return NotFound();
             }
-            var accountDto = _mapper.Map<AccountDto>(account);
+
+            var accountDto = await _accountService.GetAccountById(id);
+
+            if (accountDto == null)
+            {
+                return NotFound();
+            }
             return Ok(accountDto);
         }
         
@@ -86,13 +112,11 @@ namespace MusicCollection.Controllers
           {
               return Problem("Entity set 'MusicCollectionContext.Accounts'  is null.");
           }
-
-            var accountEntity = _mapper.Map<Account>(accountDto); 
-
-            _context.Accounts.Add(accountEntity);
+       
+            var newAccountEntity = await _accountService.AddAccount(accountDto);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAccount", new { id = accountEntity.Id }, accountEntity);
+            return CreatedAtAction("GetAccount", new { id = newAccountEntity.Id }, newAccountEntity);
         }
 
         [HttpDelete("{id}")]
@@ -102,14 +126,13 @@ namespace MusicCollection.Controllers
             {
                 return NotFound();
             }
-            var account = await _context.Accounts.FindAsync(id);
+            var account = await _accountService.GetAccountById(id);
             if (account == null)
             {
                 return NotFound();
             }
 
-            _context.Accounts.Remove(account);
-            await _context.SaveChangesAsync();
+            await _accountService.DeleteAccount(id);
 
             return NoContent();
         }

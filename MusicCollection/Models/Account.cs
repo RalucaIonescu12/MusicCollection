@@ -1,5 +1,6 @@
 ﻿
 using MusicCollection.Models.Base;
+using MusicCollection.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -15,5 +16,7 @@ namespace MusicCollection.Models
         public ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
         [JsonIgnore]
         public string PasswordHash { get; set; } = string.Empty;
+
+        public Role Role { get; set; }
     }
 }

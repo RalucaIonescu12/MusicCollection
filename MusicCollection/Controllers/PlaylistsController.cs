@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using MusicCollection.Data;
 using MusicCollection.Models;
 using MusicCollection.Models.Dtos;
+using MusicCollection.Services.PlaylistService;
 
 namespace MusicCollection.Controllers
 {
@@ -18,10 +19,12 @@ namespace MusicCollection.Controllers
     {
         private readonly MusicCollectionContext _context;
         private readonly IMapper _mapper;
-        public PlaylistsController(MusicCollectionContext context, IMapper mapper)
+        private readonly IPlaylistService _playlistService;
+        public PlaylistsController(MusicCollectionContext context, IMapper mapper,IPlaylistService playlistService)
         {
             _context = context;
             _mapper = mapper;
+            _playlistService = playlistService;
         }
 
         // GET: api/Playlists
@@ -32,8 +35,7 @@ namespace MusicCollection.Controllers
           {
               return NotFound();
           }
-            //return await _context.Playlists.ToListAsync();
-            return Ok(_mapper.Map<ICollection<PlaylistDto>>(await _context.Playlists.ToListAsync()));
+            return Ok(await _playlistService.GetAll());
         }
 
         [HttpGet("{id}")]

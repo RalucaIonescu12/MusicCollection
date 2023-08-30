@@ -1,6 +1,8 @@
 ﻿using MusicCollection.Models;
 using MusicCollection.Models.Dtos;
 using AutoMapper;
+using MusicCollection.Models.DTOs;
+
 namespace MusicCollection.Profiles
 {
     public class AccountProfile:Profile
@@ -11,6 +13,11 @@ namespace MusicCollection.Profiles
             CreateMap<Account, AccountDto>();
             CreateMap< AccountDto, Account>();
             CreateMap< AccountCreateDto, Account>();
+            CreateMap<AccountAuthRequestDto, Account>();
+            CreateMap<AccountAuthResponseDto, Account>();
+            CreateMap<Account,AccountAuthRequestDto>();
+            CreateMap<Account,AccountAuthResponseDto>();
+
         }
     }
 }

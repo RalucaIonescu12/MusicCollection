@@ -13,6 +13,10 @@ namespace MusicCollection.Repositories.SongRepository
         {
             return await _table.ToListAsync();
         }
+        public async Task<Song> GetSongById(Guid id)
+        {
+            return await FindByIdAsync(id);
+        }
     }
 }
 
