@@ -6,9 +6,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MusicCollection.Data;
-using MusicCollection.Models;
-using MusicCollection.Models.Dtos;
+using DAL.Data;
+using DAL.Models;
+using DAL.Models.Dtos;
 using MusicCollection.Services.ArtistService;
 using MusicCollection.Services.PlaylistService;
 

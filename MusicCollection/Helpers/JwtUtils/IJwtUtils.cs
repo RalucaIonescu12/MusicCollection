@@ -1,4 +1,4 @@
-﻿using MusicCollection.Models;
+﻿using DAL.Models;
 
 namespace MusicCollection.Helpers.Jwt
 {

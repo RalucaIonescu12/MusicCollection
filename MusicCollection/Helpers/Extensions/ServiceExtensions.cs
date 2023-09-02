@@ -1,12 +1,13 @@
 ﻿using MusicCollection.Helpers.Jwt;
-using MusicCollection.Repositories.AccountRepository;
-using MusicCollection.Repositories.ArtistRepository;
-using MusicCollection.Repositories.PlaylistRepository;
-using MusicCollection.Repositories.SongRepository;
+using DAL.Repositories.AccountRepository;
+using DAL.Repositories.ArtistRepository;
+using DAL.Repositories.PlaylistRepository;
+using DAL.Repositories.SongRepository;
 using MusicCollection.Services.AccountService;
 using MusicCollection.Services.ArtistService;
 using MusicCollection.Services.PlaylistService;
 using MusicCollection.Services.SongService;
+using DAL.Repositories.SongInPlaylistRepository;
 
 namespace MusicCollection.Helpers.Extensions
 {
@@ -19,6 +20,7 @@ namespace MusicCollection.Helpers.Extensions
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IPlaylistRepository, PlaylistRepository>();
             services.AddTransient<IArtistRepository, ArtistRepository>();
+            services.AddTransient<ISongInPlaylistRepository, SongInPlaylistRepository>();
             return services;
         }
 

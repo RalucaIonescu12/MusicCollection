@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
+using DAL.Repositories.AccountRepository;
 using MusicCollection.Helpers.Jwt;
-using MusicCollection.Models;
-using MusicCollection.Models.Dtos;
-using MusicCollection.Models.DTOs;
-using MusicCollection.Models.Enums;
-using MusicCollection.Repositories.AccountRepository;
+using DAL.Models;
+using DAL.Models.Dtos;
+using DAL.Models.DTOs;
+using DAL.Models.Enums;
 using NuGet.DependencyResolver;
 using BCryptNet = BCrypt.Net.BCrypt;
+
 namespace MusicCollection.Services.AccountService
 {
     public class AccountService : IAccountService

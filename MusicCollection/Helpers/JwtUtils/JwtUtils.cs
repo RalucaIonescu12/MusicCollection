@@ -1,4 +1,4 @@
-﻿using MusicCollection.Models;
+﻿using DAL.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

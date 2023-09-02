@@ -1,6 +1,6 @@
 ﻿
-using MusicCollection.Models;
-using MusicCollection.Models.Dtos;
+using DAL.Models;
+using DAL.Models.Dtos;
 
 namespace MusicCollection.Services.ArtistService
 {

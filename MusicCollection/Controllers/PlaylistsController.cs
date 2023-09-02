@@ -6,9 +6,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MusicCollection.Data;
-using MusicCollection.Models;
-using MusicCollection.Models.Dtos;
+using DAL.Data;
+using DAL.Models;
+using DAL.Models.Dtos;
 using MusicCollection.Services.PlaylistService;
 
 namespace MusicCollection.Controllers
@@ -37,6 +37,15 @@ namespace MusicCollection.Controllers
           }
             return Ok(await _playlistService.GetAll());
         }
+        [HttpGet("get-playlists-for-account/{accountId}")]
+        public async Task<ActionResult<IEnumerable<PlaylistDto>>> GetPlaylistsForAccount(Guid accountId)
+        {
+            if (_context.Playlists == null)
+            {
+                return NotFound();
+            }
+            return Ok(await _playlistService.GetPlaylistsForAccount(accountId));
+        }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<PlaylistDto>> GetPlaylist(Guid id)
@@ -54,7 +63,8 @@ namespace MusicCollection.Controllers
             var playlistDto= _mapper.Map<PlaylistDto>(playlist);
             return Ok(playlistDto);
         }
-        
+    
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPlaylist(Guid id, Playlist playlist)
         {

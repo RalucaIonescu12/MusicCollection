@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using MusicCollection.Data;
+using DAL.Data;
 using MusicCollection.Helpers.Extensions;
-using MusicCollection.Repositories.AccountRepository;
-using MusicCollection.Repositories.SongRepository;
+using DAL.Repositories.AccountRepository;
+using DAL.Repositories.SongRepository;
 using MusicCollection.Services.AccountService;
 using MusicCollection.Services.SongService;
 using MusicLibrary.Helpers;
@@ -38,7 +38,9 @@ builder.Services.AddCors(options => {
         builder => {
             builder.WithOrigins("http://localhost:4200")
             .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .AllowCredentials()
+            ;
         });
 });
 var app = builder.Build();

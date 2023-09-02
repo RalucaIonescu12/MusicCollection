@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using MusicCollection.Models;
-using MusicCollection.Models.Dtos;
-using MusicCollection.Repositories.ArtistRepository;
+using DAL.Models;
+using DAL.Models.Dtos;
+using DAL.Repositories.ArtistRepository;
 
 namespace MusicCollection.Services.ArtistService
 {

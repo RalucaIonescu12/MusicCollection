@@ -1,27 +1,38 @@
 ﻿using AutoMapper;
-using MusicCollection.Models;
-using MusicCollection.Models.Dtos;
-using MusicCollection.Repositories.AccountRepository;
-using MusicCollection.Repositories.SongRepository;
+using DAL.Models;
+using DAL.Models.Dtos;
+using DAL.Repositories.ArtistRepository;
+using DAL.Repositories.SongInPlaylistRepository;
+using DAL.Repositories.SongRepository;
 
 namespace MusicCollection.Services.SongService
 {
     public class SongService : ISongService
     {
         public ISongRepository _songRepository;
+        public ISongInPlaylistRepository _songInPlaylistRepository;
         public IMapper _mapper;
-        public SongService(ISongRepository songRepository, IMapper mapper)
+        public IArtistRepository _artistRepository;
+        public SongService(ISongRepository songRepository, IMapper mapper, ISongInPlaylistRepository songInPlaylistRepository, IArtistRepository artistRepository)
+
         {
             _songRepository = songRepository;
             _mapper = mapper;
+            _songInPlaylistRepository = songInPlaylistRepository;
+            _artistRepository = artistRepository;
         }
 
-        public async Task<Song> AddSong(SongCreateDto newSong)
+        public async Task<SongDto> AddSong(SongCreateDto newSong, Guid artistId)
         {
+
             var newSongEntity = _mapper.Map<Song>(newSong);
+            newSongEntity.Artist =  _artistRepository.FindById(artistId);
+            newSongEntity.ArtistId = artistId;
             await _songRepository.CreateAsync(newSongEntity);
             await _songRepository.SaveAsync();
-            return newSongEntity;
+            var songDto = _mapper.Map<SongDto>(newSongEntity);
+            songDto.ArtistName = await _artistRepository.GetArtistNameById(artistId);
+            return songDto;
         }
 
         //public async Task<List<AccountWithStudentsDto>> AddStudentsToAccount(Guid accountId, List<Guid> studentsIds)
@@ -64,6 +75,22 @@ namespace MusicCollection.Services.SongService
         {
             var song = await _songRepository.GetSongById(songId);
             return _mapper.Map<SongDto>(song);
+        }
+        public async Task AddSongInPlaylist(Guid playlistId, Guid songId)
+        {
+            await _songInPlaylistRepository.AddSongInPlaylist(playlistId, songId);
+            await _songInPlaylistRepository.SaveAsync();
+        }
+        public async Task<List<SongDto>> GetSongsForPlaylist(Guid playlistId)
+        {
+            var songIds = await _songInPlaylistRepository.GetSongIdsForPlaylist(playlistId);
+            var songs = await _songRepository.GetSongsByIds(songIds);
+            return _mapper.Map<List<SongDto>>(songs);
+
+        }
+        public async Task<string> GetArtistName(SongDto songDto)
+        {
+            return await _artistRepository.GetArtistNameById(songDto.ArtistId);
         }
     }
 }

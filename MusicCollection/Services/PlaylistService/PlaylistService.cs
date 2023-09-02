@@ -1,18 +1,22 @@
 ﻿using AutoMapper;
-using MusicCollection.Models;
-using MusicCollection.Models.Dtos;
-using MusicCollection.Repositories.PlaylistRepository;
+using DAL.Models;
+using DAL.Models.Dtos;
+using DAL.Repositories.PlaylistRepository;
+using DAL.Repositories.SongInPlaylistRepository;
+using Microsoft.Identity.Client;
 
 namespace MusicCollection.Services.PlaylistService
 {
     public class PlaylistService : IPlaylistService
     {
         public IPlaylistRepository _playlistRepository;
+        public ISongInPlaylistRepository _songInPlaylistRepository;
         public IMapper _mapper;
-        public PlaylistService(IPlaylistRepository playlistRepository, IMapper mapper)
+        public PlaylistService(IPlaylistRepository playlistRepository, IMapper mapper, ISongInPlaylistRepository songInPlaylistRepository)
         {
             _playlistRepository = playlistRepository;
             _mapper = mapper;
+            _songInPlaylistRepository = songInPlaylistRepository;
         }
 
         public async Task<Playlist> AddPlaylist(PlaylistCreateDto newPlaylist)
@@ -21,6 +25,20 @@ namespace MusicCollection.Services.PlaylistService
             await _playlistRepository.CreateAsync(newPlaylistEntity);
             await _playlistRepository.SaveAsync();
             return newPlaylistEntity;
+        }
+
+        public async Task<List<PlaylistDto>> GetPlaylistsForAccount(Guid accountId)
+        {
+            var playlists = await _playlistRepository.GetPlaylistsForAccount(accountId);
+
+            var playlistsDtos = _mapper.Map<List<PlaylistDto>>(playlists);
+
+            foreach (var playlistDto in playlistsDtos)
+            {
+                playlistDto.numberOfSongs = await _songInPlaylistRepository.CountSongs(playlistDto.Id);
+            }
+
+            return playlistsDtos;
         }
 
 
@@ -41,5 +59,6 @@ namespace MusicCollection.Services.PlaylistService
             var playlist = await _playlistRepository.GetPlaylistById(playlistId);
             return _mapper.Map<PlaylistDto>(playlist);
         }
+       
     }
 }

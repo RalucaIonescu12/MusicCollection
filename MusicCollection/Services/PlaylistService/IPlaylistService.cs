@@ -1,6 +1,7 @@
 ﻿
-using MusicCollection.Models;
-using MusicCollection.Models.Dtos;
+using DAL.Models;
+using DAL.Models.Dtos;
+using Microsoft.Build.Framework;
 
 namespace MusicCollection.Services.PlaylistService
 {
@@ -11,5 +12,8 @@ namespace MusicCollection.Services.PlaylistService
      
         public Task DeletePlaylist(Guid playlistId);
         public Task<PlaylistDto> GetPlaylistById(Guid playlistId);
+        public Task<List<PlaylistDto>> GetPlaylistsForAccount(Guid accountId);
+        
+
     }
 }

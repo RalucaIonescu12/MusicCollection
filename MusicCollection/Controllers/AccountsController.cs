@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
+using DAL.Data;
+using DAL.Models;
+using DAL.Models.Dtos;
+using DAL.Models.DTOs;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MusicCollection.Data;
-using MusicCollection.Helpers.Attributes;
-using MusicCollection.Models;
-using MusicCollection.Models.Dtos;
-using MusicCollection.Models.DTOs;
-using MusicCollection.Models.Enums;
 using MusicCollection.Services.AccountService;
 
 namespace MusicCollection.Controllers
@@ -34,6 +32,8 @@ namespace MusicCollection.Controllers
         [HttpPost("create-admin")]
         public async Task<IActionResult> CreateAdmin(AccountAuthRequestDto account)
         {
+            if (EmailExists(account.Email))
+                return BadRequest("You already have an account with this email!");
             await _accountService.CreateAdmin(account);
             return Ok();
         }
@@ -140,6 +140,10 @@ namespace MusicCollection.Controllers
         private bool AccountExists(Guid id)
         {
             return (_context.Accounts?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+        private bool EmailExists(String email)
+        {
+            return (_context.Accounts?.Any(e => e.Email == email)).GetValueOrDefault();
         }
     }
 }

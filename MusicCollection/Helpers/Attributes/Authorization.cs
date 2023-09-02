@@ -1,5 +1,5 @@
-﻿using MusicCollection.Models;
-using MusicCollection.Models.Enums;
+﻿using DAL.Models;
+using DAL.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

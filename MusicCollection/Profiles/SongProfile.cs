@@ -1,5 +1,5 @@
-﻿using MusicCollection.Models;
-using MusicCollection.Models.Dtos;
+﻿using DAL.Models;
+using DAL.Models.Dtos;
 using AutoMapper;
 namespace MusicCollection.Profiles
 {

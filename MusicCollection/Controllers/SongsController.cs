@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
-using MusicCollection.Data;
-using MusicCollection.Models;
-using MusicCollection.Models.Dtos;
+using DAL.Data;
+using DAL.Models;
+using DAL.Models.Dtos;
 using MusicCollection.Services.SongService;
 
 namespace MusicCollection.Controllers
@@ -36,10 +36,28 @@ namespace MusicCollection.Controllers
           {
               return NotFound();
           }
-         
-            return Ok(await _songService.GetAll());
-        }
+            var songDtos = await _songService.GetAll();
+            foreach (var song in songDtos)
+            {
+                song.ArtistName = await _songService.GetArtistName(song);
+            }
 
+            return Ok(songDtos);
+        }
+        [HttpGet("get-songs-for-playlist/{playlistId}")]
+        public async Task<ActionResult<List<SongDto>>> GetSongsInPlaylist(Guid playlistId)
+        {
+            if (_context.Playlists == null)
+            {
+                return NotFound();
+            }
+            var songDtos = await _songService.GetSongsForPlaylist(playlistId);
+            foreach (var song in songDtos)
+            {
+                song.ArtistName = await _songService.GetArtistName(song);
+            }
+            return Ok(songDtos);
+        }
         [HttpGet("{id}")]
         public async Task<ActionResult<SongDto>> GetSong(Guid id)
         {
@@ -47,13 +65,12 @@ namespace MusicCollection.Controllers
           {
               return NotFound();
           }
-            var song = await _context.Songs.FindAsync(id);
-
-            if (song == null)
+            var songDto = await _songService.GetSongById(id);
+            if (songDto == null)
             {
                 return NotFound();
             }
-            var songDto = _mapper.Map<SongDto>(song);
+            songDto.ArtistName =await _songService.GetArtistName(songDto);
             return Ok(songDto);
         }
         
@@ -87,20 +104,28 @@ namespace MusicCollection.Controllers
         }
         
         [HttpPost("{artistId}")]
-        public async Task<ActionResult<Song>> PostSong(Guid artistId,SongCreateDto songDto)
+        public async Task<ActionResult<SongDto>> PostSong(Guid artistId,SongCreateDto songCreateDto)
         {
           if (_context.Songs == null)
           {
               return Problem("Entity set 'MusicCollectionContext.Songs'  is null.");
           }
-            var songEntity = _mapper.Map<Song>(songDto);
-            songEntity.ArtistId = artistId;
+            var songDto = await _songService.AddSong(songCreateDto, artistId);
 
-            _context.Songs.Add(songEntity);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSong", new { id = songEntity.Id }, songEntity);
+            return CreatedAtAction("GetSong", new { id = songDto.Id }, songDto);
         }
+        [HttpPost("add-song-in-playlist/{playlistId}/{songId}")]
+        public async Task<ActionResult> AddSongInPlaylist(Guid playlistId, Guid songId)
+        {
+            if (_context.Songs == null)
+            {
+                return Problem("Entity set 'MusicCollectionContext.Songs'  is null.");
+            }
+
+            await _songService.AddSongInPlaylist(playlistId,songId);
+            return Ok();
+        }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSong(Guid id)
