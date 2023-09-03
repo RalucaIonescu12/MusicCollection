@@ -85,36 +85,17 @@ namespace MusicCollection.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Artist>> PostArtist(ArtistCreateDto artistDto)
+        public async Task<ActionResult<ArtistDto>> PostArtist(ArtistCreateDto artistDto)
         {
           if (_context.Artists == null)
           {
               return Problem("Entity set 'MusicCollectionContext.Artists'  is null.");
           }
-            var artistEntity = _mapper.Map<Artist>(artistDto);
-            _context.Artists.Add(artistEntity);
-            await _context.SaveChangesAsync();
+            var artistEntity=await _artistService.AddArtist(artistDto);
             return CreatedAtAction("GetArtist", new { id = artistEntity.Id }, artistEntity);
         }
         
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteArtist(Guid id)
-        {
-            if (_context.Artists == null)
-            {
-                return NotFound();
-            }
-            var artist = await _context.Artists.FindAsync(id);
-            if (artist == null)
-            {
-                return NotFound();
-            }
-
-            _context.Artists.Remove(artist);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
+    
 
         private bool ArtistExists(Guid id)
         {

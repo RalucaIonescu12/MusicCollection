@@ -74,34 +74,7 @@ namespace MusicCollection.Controllers
             return Ok(songDto);
         }
         
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSong(Guid id, Song song)
-        {
-            if (id != song.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(song).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SongExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
+     
         
         [HttpPost("{artistId}")]
         public async Task<ActionResult<SongDto>> PostSong(Guid artistId,SongCreateDto songCreateDto)
@@ -134,15 +107,13 @@ namespace MusicCollection.Controllers
             {
                 return NotFound();
             }
-            var song = await _context.Songs.FindAsync(id);
+            var song = await _songService.GetSongById(id);
             if (song == null)
             {
                 return NotFound();
             }
 
-            _context.Songs.Remove(song);
-            await _context.SaveChangesAsync();
-
+            await _songService.DeleteSong(id);
             return NoContent();
         }
 

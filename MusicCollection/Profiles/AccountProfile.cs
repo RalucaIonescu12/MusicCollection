@@ -17,6 +17,9 @@ namespace MusicCollection.Profiles
             CreateMap<AccountAuthResponseDto, Account>();
             CreateMap<Account,AccountAuthRequestDto>();
             CreateMap<Account,AccountAuthResponseDto>();
+            CreateMap<Account, AccountregisterAuthRequestDto>();
+
+            CreateMap<AccountregisterAuthRequestDto, Account>();
 
         }
     }

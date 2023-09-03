@@ -14,7 +14,8 @@ namespace MusicCollection.Services.AccountService
         public Task DeleteAccount(Guid accountId);
         public Task<AccountDto> GetAccountById(Guid accountId);
         public Task<Account> GetAccountEntityById(Guid accountId);
-        Task Create(AccountAuthRequestDto newAdmin);
-        Task CreateAdmin(AccountAuthRequestDto newAdmin);
+        public Task Create(AccountregisterAuthRequestDto newAdmin);
+        public Task CreateAdmin(AccountAuthRequestDto newAdmin);
+        public Task PutAccount(AccountUpdateDto accountUpdateDto, Guid id);
     }
 }

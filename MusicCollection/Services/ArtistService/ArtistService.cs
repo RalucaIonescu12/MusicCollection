@@ -2,6 +2,7 @@
 using DAL.Models;
 using DAL.Models.Dtos;
 using DAL.Repositories.ArtistRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace MusicCollection.Services.ArtistService
 {
@@ -41,6 +42,11 @@ namespace MusicCollection.Services.ArtistService
         {
             var artist = await _artistRepository.GetArtistById(artistId);
             return _mapper.Map<ArtistDto>(artist);
+        }
+        public async Task<Artist> GetArtistEntityById(Guid artistId)
+        {
+            var artist = await _artistRepository.GetArtistById(artistId);
+            return artist;
         }
     }
 }

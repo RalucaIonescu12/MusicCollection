@@ -19,6 +19,17 @@ namespace MusicCollection.Services.PlaylistService
             _songInPlaylistRepository = songInPlaylistRepository;
         }
 
+        public async Task PutPlaylist(PlaylistUpdateDto playlistDto, Guid id)
+        {
+            var existingPlaylist = await GetPlaylistEntityById(id);
+            if (existingPlaylist != null)
+            {
+                existingPlaylist.Name = playlistDto.Name;
+                existingPlaylist.Description = playlistDto.Description;
+                await _playlistRepository.SaveAsync();
+            }
+
+        }
         public async Task<Playlist> AddPlaylist(PlaylistCreateDto newPlaylist)
         {
             var newPlaylistEntity = _mapper.Map<Playlist>(newPlaylist);
@@ -59,6 +70,11 @@ namespace MusicCollection.Services.PlaylistService
             var playlist = await _playlistRepository.GetPlaylistById(playlistId);
             return _mapper.Map<PlaylistDto>(playlist);
         }
-       
+        public async Task<Playlist> GetPlaylistEntityById(Guid playlistId)
+        {
+            var playlist = await _playlistRepository.GetPlaylistById(playlistId);
+            return playlist;
+        }
+
     }
 }

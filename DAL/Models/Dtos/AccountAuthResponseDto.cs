@@ -11,6 +11,7 @@
         public AccountAuthResponseDto(Account account , string token)
         {
             Id = account.Id;
+            Name = account.Name;
             Email = account.Email;
             Token = token;
         }

@@ -50,47 +50,26 @@ namespace MusicCollection.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PlaylistDto>> GetPlaylist(Guid id)
         {
-          if (_context.Playlists == null)
-          {
-              return NotFound();
-          }
-            var playlist = await _context.Playlists.FindAsync(id);
-
-            if (playlist == null)
+            if (_context.Playlists == null)
             {
                 return NotFound();
             }
-            var playlistDto= _mapper.Map<PlaylistDto>(playlist);
+            
+            var playlistDto = await _playlistService.GetPlaylistById(id);
             return Ok(playlistDto);
         }
     
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlaylist(Guid id, Playlist playlist)
+        public async Task<IActionResult> PutPlaylist(Guid id, PlaylistUpdateDto playlist)
         {
-            if (id != playlist.Id)
+            var existingPlaylist = await _playlistService.GetPlaylistById(id);
+            if (existingPlaylist == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(playlist).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlaylistExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await _playlistService.PutPlaylist(playlist, id);
             return NoContent();
         }
 

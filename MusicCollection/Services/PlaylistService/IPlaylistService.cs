@@ -13,7 +13,7 @@ namespace MusicCollection.Services.PlaylistService
         public Task DeletePlaylist(Guid playlistId);
         public Task<PlaylistDto> GetPlaylistById(Guid playlistId);
         public Task<List<PlaylistDto>> GetPlaylistsForAccount(Guid accountId);
-        
+        public Task PutPlaylist(PlaylistUpdateDto playlistDto, Guid id);
 
     }
 }

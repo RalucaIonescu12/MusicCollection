@@ -7,6 +7,7 @@ using DAL.Models.DTOs;
 using DAL.Models.Enums;
 using NuGet.DependencyResolver;
 using BCryptNet = BCrypt.Net.BCrypt;
+using Microsoft.EntityFrameworkCore;
 
 namespace MusicCollection.Services.AccountService
 {
@@ -41,8 +42,18 @@ namespace MusicCollection.Services.AccountService
             await _accountRepository.SaveAsync();
             return newAccountEntity;
         }
+        public async Task PutAccount(AccountUpdateDto accountUpdateDto, Guid id)
+        {
+            var existingAccount = await GetAccountEntityById(id);
+            if (existingAccount != null)
+            {
+                existingAccount.Name = accountUpdateDto.Name;
 
-      
+                await _accountRepository.SaveAsync();
+            }
+
+        }
+
         public async Task DeleteAccount(Guid accountId)
         {
             var accountToDelete = await _accountRepository.FindByIdAsync(accountId);
@@ -65,7 +76,7 @@ namespace MusicCollection.Services.AccountService
             var account = await _accountRepository.GetAccountById(accountId);
             return account;
         }
-        public async Task Create(AccountAuthRequestDto account)
+        public async Task Create(AccountregisterAuthRequestDto account)
         {
             var newDBAccount = _mapper.Map<Account>(account);
             newDBAccount.PasswordHash = BCryptNet.HashPassword(account.Password);

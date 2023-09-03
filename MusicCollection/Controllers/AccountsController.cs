@@ -24,7 +24,7 @@ namespace MusicCollection.Controllers
             _accountService = accountService;
         }
         [HttpPost("create-user")]
-        public async Task<IActionResult> CreateAccount(AccountAuthRequestDto account)
+        public async Task<IActionResult> CreateAccount(AccountregisterAuthRequestDto account)
         {
             await _accountService.Create(account);
             return Ok();
@@ -48,7 +48,6 @@ namespace MusicCollection.Controllers
             }
             return Ok(response);
         }
-        //[Authorization(Role.Admin)]
         [HttpGet]
         public async Task<ActionResult<List<AccountDto>>> GetAccounts()
         {
@@ -75,33 +74,17 @@ namespace MusicCollection.Controllers
             }
             return Ok(accountDto);
         }
-        
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAccount(Guid id, Account account)
+        public async Task<IActionResult> PutAccount(Guid id, AccountUpdateDto accountDto)
         {
-            if (id != account.Id)
+            var existingAccount = await _accountService.GetAccountById(id);
+            if (existingAccount == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(account).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AccountExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await _accountService.PutAccount(accountDto, id);
             return NoContent();
         }
 
